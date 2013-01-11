@@ -29,15 +29,10 @@ function [ nscData, outFilename ] = loadNSC( filename )
     tic
     disp(['[2.] Processing file ' filename '...']);
     fid = fopen(filename);
-    json = '[';
     batchCount = 0;    
     tline = fgets(fid);
     while ischar(tline)
         batchCount = batchCount + 1;
-        tline
-        tic
-        loadjson(tline);
-        toc
         nscData{batchCount} = loadjson(tline);
         tline = fgets(fid);        
     end
