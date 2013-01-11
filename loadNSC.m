@@ -12,27 +12,39 @@ function [ nscData, outFilename ] = loadNSC( filename )
 
     %=== STEP 1
     tic
-    disp(['[1.] Loading file ' filename '...']);
+    disp(['[1.] Preallocate space for file ' filename '...']);
+    numLines = 0;
     fid = fopen(filename);
-    json = '[';
     tline = fgets(fid);
     while ischar(tline)
-        %disp(tline)
-        json = [json tline ','];
+        numLines = numLines + 1;
         tline = fgets(fid);
     end
-    json(length(json)) = ']'; %replace last comma with array terminator
     fclose(fid);
-    disp('[1.] File loaded.');
+    nscData = cell(1, numLines);
+    fprintf('[1.] Allocated for %d lines.', numLines)
     toc
     
     %=== STEP 2
     tic
-    sprintf('[2.] Parsing %d bytes of JSON to MatLab...', fileSize);
-    nscData = loadjson(json);
-    disp('[2.] JSON processed.');
+    disp(['[2.] Processing file ' filename '...']);
+    fid = fopen(filename);
+    json = '[';
+    batchCount = 0;    
+    tline = fgets(fid);
+    while ischar(tline)
+        batchCount = batchCount + 1;
+        tline
+        tic
+        loadjson(tline);
+        toc
+        nscData{batchCount} = loadjson(tline);
+        tline = fgets(fid);        
+    end
+    fclose(fid);
+    disp('[2.] File processed.');
     toc
-
+    
     %=== STEP 3
     tic
     outFilename = [filename '.MAT'];
